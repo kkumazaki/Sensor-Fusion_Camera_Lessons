@@ -43,6 +43,8 @@ void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPo
 
                 double distRatio = distCurr / distPrev;
                 distRatios.push_back(distRatio);
+                // Debug
+                //std::cout << distRatio << std::endl;
             }
         } // eof inner loop over all matched kpts
     }     // eof outer loop over all matched kpts
@@ -58,9 +60,37 @@ void computeTTCCamera(std::vector<cv::KeyPoint> &kptsPrev, std::vector<cv::KeyPo
     double meanDistRatio = std::accumulate(distRatios.begin(), distRatios.end(), 0.0) / distRatios.size();
 
     double dT = 1 / frameRate;
-    TTC = -dT / (1 - meanDistRatio);
+    //TTC = -dT / (1 - meanDistRatio);
 
     // TODO: STUDENT TASK (replacement for meanDistRatio)
+    vector<double> distRatiosSort;
+    double temp;
+    double medianDistRatio;
+
+    copy(distRatios.begin(), distRatios.end(), back_inserter(distRatiosSort));
+
+    for (int i = 0; i < distRatiosSort.size() - 1; i++){
+        for (int j = 0; j < distRatiosSort.size() - i; j++){
+            if(distRatiosSort[j] > distRatiosSort[j+1]){
+                temp = distRatiosSort[j];
+                distRatiosSort[j] = distRatiosSort[j+1];
+                distRatiosSort[j+1] = temp;
+            }
+        }
+    }
+
+    if (distRatiosSort.size() % 2 == 0){
+        medianDistRatio = (distRatiosSort[distRatiosSort.size()/2 -1]+distRatiosSort[distRatiosSort.size()/2])/2;
+        //std::cout << distRatiosSort.size()/2 -1 << std::endl;
+        //std::cout << medianDistRatio << std::endl;      
+    }
+    else {
+        medianDistRatio = distRatiosSort[(distRatiosSort.size()-1)/2];
+    }
+
+    TTC = -dT / (1 - medianDistRatio);
+    //std::cout << medianDistRatio << std::endl;
+    //std::cout << TTC << std::endl;
 }
 
 int main()

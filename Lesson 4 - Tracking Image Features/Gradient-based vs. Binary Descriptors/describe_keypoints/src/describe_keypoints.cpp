@@ -16,6 +16,7 @@ void descKeypoints1()
     cv::Mat img = cv::imread("../images/img1.png");
     cv::cvtColor(img, imgGray, cv::COLOR_BGR2GRAY);
 
+    
     // BRISK detector / descriptor
     cv::Ptr<cv::FeatureDetector> detector = cv::BRISK::create();
     vector<cv::KeyPoint> kptsBRISK;
@@ -32,6 +33,7 @@ void descKeypoints1()
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
     cout << "BRISK descriptor in " << 1000 * t / 1.0 << " ms" << endl;
 
+    
     // visualize results
     cv::Mat visImage = img.clone();
     cv::drawKeypoints(img, kptsBRISK, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
@@ -39,12 +41,41 @@ void descKeypoints1()
     cv::namedWindow(windowName, 1);
     imshow(windowName, visImage);
     cv::waitKey(0);
+    
 
     // TODO: Add the SIFT detector / descriptor, compute the 
     // time for both steps and compare both BRISK and SIFT
     // with regard to processing speed and the number and 
     // visual appearance of keypoints.
 
+    // Reference: https://newbedev.com/how-do-i-use-sift-in-opencv-3-0-with-c
+    /*
+    // SIFT detector / descriptor
+    cv::Ptr<cv::Feature2D> detector = cv::xfeatures2d::SIFT::create();
+    //cv::Ptr<cv::SiftFeatureDetector> detector;
+    vector<cv::KeyPoint> kptsSIFT;
+
+    double t = (double)cv::getTickCount();
+    detector->detect(imgGray, kptsSIFT);
+    t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+    cout << "SIFT detector with n= " << kptsSIFT.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+
+    //cv::Ptr<cv::DescriptorExtractor> descriptor = cv::DescriptorExtractor::create("SIFT");
+    cv::Mat descSIFT;
+    t = (double)cv::getTickCount();
+    detector->compute(imgGray, kptsSIFT, descSIFT);
+    //descriptor->compute(imgGray, kptsSIFT, descSIFT);
+    t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+    cout << "SIFT descriptor in " << 1000 * t / 1.0 << " ms" << endl;
+
+    // visualize results
+    cv::Mat visImage = img.clone();
+    cv::drawKeypoints(img, kptsSIFT, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    string windowName = "SIFT Results";
+    cv::namedWindow(windowName, 1);
+    imshow(windowName, visImage);
+    cv::waitKey(0);
+    */
 }
 
 int main()

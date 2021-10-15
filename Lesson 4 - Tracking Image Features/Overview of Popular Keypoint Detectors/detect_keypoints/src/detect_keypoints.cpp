@@ -30,27 +30,49 @@ void detKeypoints1()
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
     cout << "Shi-Tomasi with n= " << corners.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
 
-    for (auto it = corners.begin(); it != corners.end(); ++it)
+    for (int i = 0; i < corners.size(); i++)
+    //for (auto it = corners.begin(); it != corners.end(); ++it)
     { // add corners to result vector
-
         cv::KeyPoint newKeyPoint;
-        newKeyPoint.pt = cv::Point2f((*it).x, (*it).y);
+        newKeyPoint.pt = cv::Point2f(corners.at(i).x, corners.at(i).y);
+        //newKeyPoint.pt = cv::Point2f((*it).x, (*it).y);
         newKeyPoint.size = blockSize;
         kptsShiTomasi.push_back(newKeyPoint);
+        //cout << i << "th keppoint: " << newKeyPoint.pt  << endl;
+        //cout << "x: " << corners.at(i).x << ", y: " << corners.at(i).y << endl;
     }
 
     // visualize results
+    /*
     cv::Mat visImage = img.clone();
     cv::drawKeypoints(img, kptsShiTomasi, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
     string windowName = "Shi-Tomasi Results";
     cv::namedWindow(windowName, 1);
     imshow(windowName, visImage);
+    */
 
     // TODO: use the OpenCV library to add the FAST detector
     // in addition to the already implemented Shi-Tomasi 
     // detector and compare both algorithms with regard to 
     // (a) number of keypoints, (b) distribution of 
     // keypoints over the image and (c) processing speed.
+    int threshold = 30;                                                              // difference between intensity of the central pixel and pixels of a circle around this pixel
+    bool bNMS = true;                                                                // perform non-maxima suppression on keypoints
+    cv::FastFeatureDetector::DetectorType type = cv::FastFeatureDetector::TYPE_9_16; // TYPE_9_16, TYPE_7_12, TYPE_5_8
+    cv::Ptr<cv::FeatureDetector> detector = cv::FastFeatureDetector::create(threshold, bNMS, type);
+
+    vector<cv::KeyPoint> kptsFAST;
+    t = (double)cv::getTickCount();
+    detector->detect(imgGray, kptsFAST);
+    t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+    cout << "FAST with n= " << kptsFAST.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+
+    cv::Mat visImage = img.clone();
+    cv::drawKeypoints(img, kptsFAST, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    string windowName = "FAST Results";
+    cv::namedWindow(windowName, 2);
+    imshow(windowName, visImage);
+    cv::waitKey(0);
 }
 
 int main()

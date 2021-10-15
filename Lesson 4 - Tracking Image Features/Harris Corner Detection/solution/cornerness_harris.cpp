@@ -28,16 +28,17 @@ void cornernessHarris()
     cv::convertScaleAbs(dst_norm, dst_norm_scaled);
 
     // visualize results
-    string windowName = "Harris Corner Detector Response Matrix";
-    cv::namedWindow(windowName, 4);
-    cv::imshow(windowName, dst_norm_scaled);
-    cv::waitKey(0);
+    //string windowName = "Harris Corner Detector Response Matrix";
+    //cv::namedWindow(windowName, 4);
+    //cv::imshow(windowName, dst_norm_scaled);
+    //cv::waitKey(0);
 
     // STUDENTS NEET TO ENTER THIS CODE (C3.2 Atom 4)
 
     // Look for prominent corners and instantiate keypoints
     vector<cv::KeyPoint> keypoints;
     double maxOverlap = 0.0; // max. permissible overlap between two features in %, used during non-maxima suppression
+    int count  = 0;
     for (size_t j = 0; j < dst_norm.rows; j++)
     {
         for (size_t i = 0; i < dst_norm.cols; i++)
@@ -69,13 +70,16 @@ void cornernessHarris()
                 if (!bOverlap)
                 {                                     // only add new key point if no overlap has been found in previous NMS
                     keypoints.push_back(newKeyPoint); // store new keypoint in dynamic list
+                    count += 1;
                 }
             }
         } // eof loop over cols
     }     // eof loop over rows
 
+    cout << "count: " << count << endl;
+
     // visualize keypoints
-    windowName = "Harris Corner Detection Results";
+    string windowName = "Harris Corner Detection Results";
     cv::namedWindow(windowName, 5);
     cv::Mat visImage = dst_norm_scaled.clone();
     cv::drawKeypoints(dst_norm_scaled, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
